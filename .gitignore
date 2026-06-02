@@ -1,0 +1,21 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Spring Boot / Maven
+springboot/target/
+springboot/.mvn/
+*.log
+*.jar
+*.war
+
+# Vue / Node
+vue/node_modules/
+vue/dist/
+vue/.vite/
+vue/*.log
+
+# OS garbage
+.DS_Store
+Thumbs.db
