@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div style="height: 60px; background-color: #2e3143; display: flex; align-items: center; border-bottom: 1px solid #ddd">
+    <div
+        style="height: 60px; background-color: #2e3143; display: flex; align-items: center; border-bottom: 1px solid #ddd">
       <div style="flex: 1">
         <div style="padding-left: 20px; display: flex; align-items: center">
           <img src="@/assets/imgs/logo.png" alt="" style="width: 40px">
@@ -8,7 +9,8 @@
         </div>
       </div>
       <div style="width: fit-content; padding-right: 10px; display: flex; align-items: center;">
-        <img style="width: 40px; height: 40px; border-radius: 50%" :src="data.user.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" alt="">
+        <img style="width: 40px; height: 40px; border-radius: 50%"
+             :src="data.user.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" alt="">
         <span style="color: #fff; margin-left: 5px">{{ data.user.name || '代码小白' }}</span>
       </div>
     </div>
@@ -22,27 +24,41 @@
             :default-openeds="['user']"
         >
           <el-menu-item index="/manager/home">
-            <el-icon><HomeFilled /></el-icon>
+            <el-icon>
+              <HomeFilled/>
+            </el-icon>
             <span>Home</span>
           </el-menu-item>
           <el-sub-menu index="user">
             <template #title>
-              <el-icon><User /></el-icon>
+              <el-icon>
+                <User/>
+              </el-icon>
               <span>User control</span>
             </template>
+            <el-menu-item index="/manager/user">
+              <el-icon>
+                <User/>
+              </el-icon>
+              <span>Normal user</span>
+            </el-menu-item>
             <el-menu-item index="/manager/admin">
-              <el-icon><User /></el-icon>
+              <el-icon>
+                <User/>
+              </el-icon>
               <span>Admin info</span>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item @click="logout">
-            <el-icon><SwitchButton /></el-icon>
+            <el-icon>
+              <SwitchButton/>
+            </el-icon>
             <span>Logout</span>
           </el-menu-item>
         </el-menu>
       </div>
       <div style="flex: 1; width: 0; background-color: #f8f8ff; padding: 10px">
-        <router-view @updateUser="updateUser" />
+        <router-view @updateUser="updateUser"/>
       </div>
     </div>
 
@@ -50,7 +66,7 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import {reactive} from "vue";
 import router from "@/router";
 import {ElMessage} from "element-plus";
 
@@ -78,6 +94,7 @@ const logout = () => {
 .el-menu-item.is-active {
   background-color: #d7d7e6 !important;
 }
+
 .el-menu-item:hover {
   color: #000;
 }

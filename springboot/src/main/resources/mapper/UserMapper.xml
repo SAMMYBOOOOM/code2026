@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.UserMapper">
+
+    <select id="selectAll" resultType="com.example.entity.User">
+        SELECT * FROM `user`
+        <where>
+            <if test="name != null">name LIKE CONCAT('%', #{name}, '%')</if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectByUsername" resultType="com.example.entity.User">
+        SELECT * FROM `user` WHERE username = #{username}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM `user` WHERE id = #{id}
+    </delete>
+
+<!--  works fine with and without parameterType="com.example.entity.User  -->
+    <insert id="insert" parameterType="com.example.entity.User">
+        INSERT INTO `user` (username, password, name, avatar, role, account)
+        VALUES (#{username}, #{password}, #{name}, #{avatar}, #{role}, #{account})
+    </insert>
+
+    <update id="updateById">
+        UPDATE `user`
+        SET username = #{username},
+            password = #{password},
+            name     = #{name},
+            avatar   = #{avatar},
+            role     = #{role},
+            account  = #{account}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
