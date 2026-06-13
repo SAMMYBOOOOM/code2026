@@ -107,6 +107,8 @@ const load = () => {
   })
 }
 
+load()
+
 const reset = () => {
   data.name = null
   load()

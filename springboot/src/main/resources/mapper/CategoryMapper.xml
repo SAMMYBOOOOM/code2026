@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CategoryMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Category">
+        SELECT * FROM `category`
+        <where>
+            <if test="name != null"> AND name LIKE CONCAT('%', #{name}, '%')</if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Category">
+        SELECT * FROM `category` WHERE id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM `category` WHERE id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Category" useGeneratedKeys="true">
+        INSERT INTO `category`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Category">
+        UPDATE `category`
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>
