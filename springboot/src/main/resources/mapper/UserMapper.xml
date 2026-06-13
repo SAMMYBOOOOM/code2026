@@ -16,6 +16,10 @@
         SELECT * FROM `user` WHERE username = #{username}
     </select>
 
+    <select id="selectById" resultType="com.example.entity.User">
+        SELECT * FROM `user` WHERE id = #{id}
+    </select>
+
     <delete id="deleteById">
         DELETE FROM `user` WHERE id = #{id}
     </delete>

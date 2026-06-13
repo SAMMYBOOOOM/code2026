@@ -11,7 +11,7 @@
       <div style="width: fit-content; padding-right: 10px; display: flex; align-items: center;">
         <img style="width: 40px; height: 40px; border-radius: 50%"
              :src="data.user.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'" alt="">
-        <span style="color: #fff; margin-left: 5px">{{ data.user.name || '代码小白' }}</span>
+        <span style="color: #fff; margin-left: 5px">{{ data.user.name || 'default admin' }}</span>
       </div>
     </div>
 
@@ -49,6 +49,18 @@
               <span>Admin info</span>
             </el-menu-item>
           </el-sub-menu>
+          <el-menu-item index="/manager/person">
+            <el-icon>
+              <User/>
+            </el-icon>
+            <span>Person</span>
+          </el-menu-item>
+          <el-menu-item index="/manager/password">
+            <el-icon>
+              <Lock/>
+            </el-icon>
+            <span>Change password</span>
+          </el-menu-item>
           <el-menu-item @click="logout">
             <el-icon>
               <SwitchButton/>
@@ -86,7 +98,7 @@ const updateUser = () => {
 const logout = () => {
   router.push('/login')
   ElMessage.success('Logout successfully!')
-  localStorage.removeItem('code2026-user')
+  localStorage.removeItem('system-user')
 }
 </script>
 

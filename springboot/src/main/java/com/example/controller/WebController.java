@@ -2,7 +2,9 @@ package com.example.controller;
 
 import com.example.common.Result;
 import com.example.entity.Account;
+import com.example.entity.User;
 import com.example.service.AdminService;
+import com.example.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,9 @@ public class WebController {
 
     @Resource
     private AdminService adminService;
+
+    @Resource
+    private UserService userService;
 
 
     /**
@@ -31,6 +36,12 @@ public class WebController {
         if ("ADMIN".equals(account.getRole())) {
             ac = adminService.login(account);
         }
+        if ("NORMALUSER".equals(account.getRole())) {
+            ac = userService.login(account);
+        }
+        if (ac == null) {
+            return Result.error("Invalid account or password");
+        }
         return Result.success(ac);
     }
 
@@ -38,7 +49,11 @@ public class WebController {
      * 注册
      */
     @PostMapping("/register")
-    public Result register() {
+    public Result register(@RequestBody User user) {
+        if (!user.getPassword().equals(user.getNewPassword())) {
+            return Result.error("Passwords do not match");
+        }
+        userService.add(user);
         return Result.success();
     }
 
@@ -49,6 +64,9 @@ public class WebController {
     public Result updatePassword(@RequestBody Account account) {
         if ("ADMIN".equals(account.getRole())) {
             adminService.updatePassword(account);
+        }
+        if ("NORMALUSER".equals(account.getRole())) {
+            userService.updatePassword(account);
         }
         return Result.success();
     }

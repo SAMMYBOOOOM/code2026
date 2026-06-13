@@ -6,7 +6,9 @@
 
 package com.example.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.example.entity.Account;
 import com.example.entity.User;
 import com.example.exception.CustomException;
 import com.example.mapper.UserMapper;
@@ -41,7 +43,6 @@ public class UserService {
         if (dbUser != null) {
             throw new CustomException("Username already exists");
         }
-
         if (StrUtil.isBlank(user.getPassword())) {
             // Default password
             user.setPassword("123");
@@ -50,12 +51,39 @@ public class UserService {
             // Default name
             user.setName(user.getUsername());
         }
-        user.setRole("Normal User");
+        user.setRole("NORMALUSER");
         user.setAccount(BigDecimal.ZERO);   // Default balance
         userMapper.insert(user);
     }
 
     public void update(User user) {
         userMapper.updateById(user);
+    }
+
+    public Account login(Account account) {
+        User dbUser = userMapper.selectByUsername(account.getUsername());
+        if (ObjectUtil.isNull(dbUser)) {
+            throw new CustomException("Account not found");
+        }
+        if (!account.getPassword().equals(dbUser.getPassword())) {
+            throw new CustomException("Invalid account or password");
+        }
+        return dbUser;
+    }
+
+    public User selectById(Integer id) {
+        return userMapper.selectById(id);
+    }
+
+    public void updatePassword(Account account) {
+        User dbUser = userMapper.selectByUsername(account.getUsername());
+        if (ObjectUtil.isNull(dbUser)) {
+            throw new CustomException("Account not found");
+        }
+        if (!account.getPassword().equals(dbUser.getPassword())) {
+            throw new CustomException("Original password is incorrect");
+        }
+        dbUser.setPassword(account.getNewPassword());
+        userMapper.updateById(dbUser);
     }
 }

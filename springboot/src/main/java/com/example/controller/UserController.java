@@ -62,4 +62,13 @@ public class UserController {
         userService.update(user);
         return Result.success();
     }
+
+    /**
+     * Search by id
+     */
+    @GetMapping("/selectById/{id}")
+    public Result selectById(@PathVariable Integer id) {
+        User user = userService.selectById(id);
+        return Result.success(user);
+    }
 }
