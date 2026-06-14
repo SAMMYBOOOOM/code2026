@@ -48,6 +48,12 @@
               </el-icon>
               <span>Goods information</span>
             </el-menu-item>
+            <el-menu-item index="/manager/carousel">
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span>Goods carousel</span>
+            </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="user">
             <template #title>
