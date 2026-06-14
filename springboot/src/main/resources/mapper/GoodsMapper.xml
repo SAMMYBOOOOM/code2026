@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.GoodsMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Goods">
+        SELECT `goods`.*, category.name AS categoryName FROM `goods`
+        LEFT JOIN `category` ON `goods`.category_id = category.id
+        <where>
+            <if test="name != null">AND `goods`.name LIKE CONCAT('%', #{name}, '%')</if>
+            <if test="categoryId != null">AND `goods`.category_id = #{categoryId}</if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Goods">
+        SELECT * FROM `goods` WHERE id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM `goods` WHERE id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Goods" useGeneratedKeys="true">
+        INSERT INTO `goods`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="img != null">img,</if>
+            <if test="price != null">price,</if>
+            <if test="description != null">description,</if>
+            <if test="content != null">content,</if>
+            <if test="store != null">store,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="status != null">status,</if>
+            <if test="views != null">views,</if>
+            <if test="saleCount != null">sale_count,</if>
+            <if test="time != null">time,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="img != null">#{img},</if>
+            <if test="price != null">#{price},</if>
+            <if test="description != null">#{description},</if>
+            <if test="content != null">#{content},</if>
+            <if test="store != null">#{store},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="views != null">#{views},</if>
+            <if test="saleCount != null">#{saleCount},</if>
+            <if test="time != null">#{time},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Goods">
+        UPDATE `goods`
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="img != null">
+                img = #{img},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="store != null">
+                store = #{store},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="views != null">
+                views = #{views},
+            </if>
+            <if test="saleCount != null">
+                sale_count = #{saleCount},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

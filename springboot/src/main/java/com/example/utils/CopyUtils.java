@@ -19,9 +19,9 @@ public class CopyUtils {
     // Small utility for copying code
     public static void main(String[] args) {
         // Prefix of the source file to copy
-        String sourceName = "Admin";
+        String sourceName = "Category";
         // Prefix of the target file after copying
-        String targetName = "Category";
+        String targetName = "Goods";
 
         // Copy the full set: Controller, Service, Mapper, Mapper.xml
         copyMapperXml(sourceName, targetName);

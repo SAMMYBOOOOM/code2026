@@ -42,6 +42,12 @@
               </el-icon>
               <span>Product category</span>
             </el-menu-item>
+            <el-menu-item index="/manager/goods">
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span>Goods information</span>
+            </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="user">
             <template #title>
