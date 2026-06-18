@@ -10,7 +10,7 @@
         <div style="flex: 1; text-align: right">Email: 1234567890@mail.com</div>
       </div>
       <div style="margin-bottom: 10px">All rights reserved © 2026 Sam's store</div>
-<!--      <div style="padding-bottom: 20px; text-align: justify">All rights reserved © 2026 Sam's store</div>-->
+      <div style="padding-bottom: 20px; text-align: justify">Code by Sam</div>
     </div>
   </div>
 </template>
