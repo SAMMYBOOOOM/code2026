@@ -30,10 +30,12 @@
     </div>
 
     <div class="card">
-      <el-pagination background layout="total, prev, pager, next" v-model:page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
+      <el-pagination @current-change="load" background layout="total, prev, pager, next"
+                     v-model:page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
     </div>
 
-    <el-dialog title="Information" width="30%" v-model="data.formVisible" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Information" width="30%" v-model="data.formVisible" :close-on-click-modal="false"
+               destroy-on-close>
       <el-form :model="data.form" label-width="80px" style="padding-right: 30px">
         <el-form-item label="Avatar" prop="avatar">
           <el-upload :action="uploadUrl" list-type="picture" :on-success="handleImgSuccess">
@@ -41,10 +43,10 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="Account" prop="username">
-          <el-input :disabled="data.form.id" v-model="data.form.username" autocomplete="off" />
+          <el-input :disabled="data.form.id" v-model="data.form.username" autocomplete="off"/>
         </el-form-item>
         <el-form-item label="Name" prop="name">
-          <el-input v-model="data.form.name" autocomplete="off" />
+          <el-input v-model="data.form.name" autocomplete="off"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -136,7 +138,7 @@ const save = () => {
 
 // 删除
 const handleDelete = (id) => {
-  ElMessageBox.confirm('删除后数据无法恢复，您确定删除吗?', '删除确认', { type: 'warning' }).then(res => {
+  ElMessageBox.confirm('删除后数据无法恢复，您确定删除吗?', '删除确认', {type: 'warning'}).then(res => {
     request.delete('/admin/delete/' + id).then(res => {
       if (res.code === '200') {
         load()
@@ -145,7 +147,8 @@ const handleDelete = (id) => {
         ElMessage.error(res.msg)
       }
     })
-  }).catch(err => {})
+  }).catch(err => {
+  })
 }
 
 // 重置

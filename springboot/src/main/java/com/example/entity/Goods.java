@@ -8,6 +8,54 @@ public class Goods {
      * Primary Key ID
      */
     private Integer id;
+    /**
+     * Name
+     */
+    private String name;
+    /**
+     * Image
+     */
+    private String img;
+    /**
+     * Price
+     */
+    private BigDecimal price;
+    /**
+     * Brief Description
+     */
+    private String description;
+    /**
+     * Details
+     */
+    private String content;
+    /**
+     * Stock
+     */
+    private Integer store;
+    /**
+     * Category ID
+     */
+    private Integer categoryId;
+
+
+    private String categoryName;
+    /**
+     * Listing Status
+     */
+    private String status;
+    /**
+     * Page Views
+     */
+    private Integer views;
+    /**
+     * Sales Count
+     */
+    private Integer saleCount;
+    /**
+     * Creation Time
+     */
+    private String time;
+    private String recommend;
 
     public BigDecimal getPrice() {
         return price;
@@ -105,35 +153,6 @@ public class Goods {
         this.time = time;
     }
 
-    /**
-     * Name
-     */
-    private String name;
-    /**
-     * Image
-     */
-    private String img;
-    /**
-     * Price
-     */
-    private BigDecimal price;
-    /**
-     * Brief Description
-     */
-    private String description;
-    /**
-     * Details
-     */
-    private String content;
-    /**
-     * Stock
-     */
-    private Integer store;
-    /**
-     * Category ID
-     */
-    private Integer categoryId;
-
     public String getCategoryName() {
         return categoryName;
     }
@@ -142,22 +161,13 @@ public class Goods {
         this.categoryName = categoryName;
     }
 
-    private String categoryName;
-    /**
-     * Listing Status
-     */
-    private String status;
-    /**
-     * Page Views
-     */
-    private Integer views;
-    /**
-     * Sales Count
-     */
-    private Integer saleCount;
-    /**
-     * Creation Time
-     */
-    private String time;
+    public String getRecommend() {
+        return recommend;
+    }
+
+    public void setRecommend(String recommend) {
+        this.recommend = recommend;
+    }
+
 
 }

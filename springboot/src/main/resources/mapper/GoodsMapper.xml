@@ -10,6 +10,7 @@
         <where>
             <if test="name != null">AND `goods`.name LIKE CONCAT('%', #{name}, '%')</if>
             <if test="categoryId != null">AND `goods`.category_id = #{categoryId}</if>
+            <if test="status != null">AND `goods`.status = #{status}</if>
         </where>
         ORDER BY id DESC
     </select>
@@ -37,6 +38,7 @@
             <if test="views != null">views,</if>
             <if test="saleCount != null">sale_count,</if>
             <if test="time != null">time,</if>
+            <if test="recommend != null">recommend,</if>
         </trim>
         VALUES
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -52,6 +54,7 @@
             <if test="views != null">#{views},</if>
             <if test="saleCount != null">#{saleCount},</if>
             <if test="time != null">#{time},</if>
+            <if test="recommend != null">#{recommend},</if>
         </trim>
     </insert>
 
@@ -93,6 +96,9 @@
             </if>
             <if test="time != null">
                 time = #{time},
+            </if>
+            <if test="recommend != null">
+                recommend = #{recommend},
             </if>
         </set>
         WHERE id = #{id}

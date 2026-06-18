@@ -2,8 +2,10 @@
   <div>
 
     <div class="card" style="margin-bottom: 5px;">
-      <el-input v-model="data.name" style="width: 300px; margin-right: 10px" placeholder="Please enter name to search"></el-input>
-      <el-select style="width: 300px; margin-right: 10px" v-model="data.categoryId" placeholder="Please select product category">
+      <el-input v-model="data.name" style="width: 300px; margin-right: 10px"
+                placeholder="Please enter name to search"></el-input>
+      <el-select style="width: 300px; margin-right: 10px" v-model="data.categoryId"
+                 placeholder="Please select product category">
         <el-option v-for="item in data.categoryList" :key="item.id" :value="item.id" :label="item.name"></el-option>
       </el-select>
       <el-button type="primary" @click="load">Search</el-button>
@@ -18,7 +20,8 @@
         <el-table-column prop="name" label="Name" show-overflow-tooltip></el-table-column>
         <el-table-column prop="img" label="Image">
           <template #default="scope">
-            <el-image v-if="scope.row.img" :src="scope.row.img" :preview-src-list="[scope.row.img]" preview-teleported style="width: 100px; height: 100px;"></el-image>
+            <el-image v-if="scope.row.img" :src="scope.row.img" :preview-src-list="[scope.row.img]" preview-teleported
+                      style="width: 100px; height: 100px;"></el-image>
           </template>
         </el-table-column>
         <el-table-column prop="price" label="Price"></el-table-column>
@@ -31,6 +34,12 @@
         <el-table-column prop="store" label="Stock"></el-table-column>
         <el-table-column prop="categoryName" label="Category Name"></el-table-column>
         <el-table-column prop="status" label="Listing Status"></el-table-column>
+        <el-table-column label="recommend">
+          <template #default="scope">
+            <el-switch @change="updateRecommend(scope.row)" style="--el-switch-on-color: green"
+                       v-model="scope.row.recommendActive" active-text="Yes" inactive-text="No"/>
+          </template>
+        </el-table-column>
         <el-table-column prop="views" label="Views"></el-table-column>
         <el-table-column prop="saleCount" label="Sales"></el-table-column>
         <el-table-column prop="time" label="Creation Time"></el-table-column>
@@ -45,11 +54,14 @@
     </div>
 
     <div class="card">
-      <el-pagination @current-change="load" background layout="total, prev, pager, next" v-model:page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
+      <el-pagination @current-change="load" background layout="total, prev, pager, next"
+                     v-model:page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
     </div>
 
-    <el-dialog title="Product Information" width="50%" v-model="data.formVisible" :close-on-click-modal="false" destroy-on-close>
-      <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="80px" style="padding-right: 30px; padding-top: 20px">
+    <el-dialog title="Product Information" width="50%" v-model="data.formVisible" :close-on-click-modal="false"
+               destroy-on-close>
+      <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="80px"
+               style="padding-right: 30px; padding-top: 20px">
         <el-form-item prop="name" label="Name">
           <el-input v-model="data.form.name" placeholder="Please enter name"></el-input>
         </el-form-item>
@@ -62,7 +74,8 @@
           <el-input-number :min="0" v-model="data.form.price" placeholder="Please enter price"></el-input-number>
         </el-form-item>
         <el-form-item prop="description" label="Description">
-          <el-input type="textarea" :rows="3" v-model="data.form.description" placeholder="Please enter description"></el-input>
+          <el-input type="textarea" :rows="3" v-model="data.form.description"
+                    placeholder="Please enter description"></el-input>
         </el-form-item>
 
         <el-form-item prop="store" label="Stock">
@@ -105,7 +118,8 @@
       </template>
     </el-dialog>
 
-    <el-dialog title="Product Details" v-model="data.viewVisible" width="50%" :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="Product Details" v-model="data.viewVisible" width="50%" :close-on-click-modal="false"
+               destroy-on-close>
       <div class="editor-content-view" style="padding: 20px" v-html="data.content"></div>
       <template #footer>
     <span class="dialog-footer">
@@ -123,7 +137,7 @@ import {reactive, ref} from "vue";
 import {ElMessageBox, ElMessage} from "element-plus";
 import '@wangeditor/editor/dist/css/style.css' // import css
 import {onBeforeUnmount, shallowRef} from "vue";
-import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import {Editor, Toolbar} from '@wangeditor/editor-for-vue'
 
 const uploadUrl = import.meta.env.VITE_BASE_URL + '/files/upload'
 const formRef = ref()
@@ -141,25 +155,25 @@ const data = reactive({
   content: null,
   rules: {
     name: [
-      { required: true, message: 'Please enter name', trigger: 'blur' }
+      {required: true, message: 'Please enter name', trigger: 'blur'}
     ],
     img: [
-      { required: true, message: 'Please enter image', trigger: 'blur' }
+      {required: true, message: 'Please enter image', trigger: 'blur'}
     ],
     price: [
-      { required: true, message: 'Please enter price', trigger: 'blur' }
+      {required: true, message: 'Please enter price', trigger: 'blur'}
     ],
     description: [
-      { required: true, message: 'Please enter description', trigger: 'blur' }
+      {required: true, message: 'Please enter description', trigger: 'blur'}
     ],
     content: [
-      { required: true, message: 'Please enter details', trigger: 'blur' }
+      {required: true, message: 'Please enter details', trigger: 'blur'}
     ],
     store: [
-      { required: true, message: 'Please enter stock', trigger: 'blur' }
+      {required: true, message: 'Please enter stock', trigger: 'blur'}
     ],
     categoryId: [
-      { required: true, message: 'Please enter category ID', trigger: 'change' }
+      {required: true, message: 'Please enter category ID', trigger: 'change'}
     ]
   }
 })
@@ -169,7 +183,7 @@ const data = reactive({
 const baseUrl = import.meta.env.VITE_BASE_URL
 const editorRef = shallowRef()  // Editor instance, must use shallowRef
 const mode = 'default'
-const editorConfig = { MENU_CONF: {} }
+const editorConfig = {MENU_CONF: {}}
 // Image upload configuration
 editorConfig.MENU_CONF['uploadImage'] = {
   server: baseUrl + '/files/wang/upload',  // Server image upload endpoint
@@ -213,6 +227,9 @@ const load = () => {
     }
   }).then(res => {
     data.tableData = res.data?.list
+    data.tableData.forEach(v => {
+      v.recommendActive = v.recommend === 'Yes'
+    })
     data.total = res.data?.total
   })
 }
@@ -220,7 +237,7 @@ load()
 
 // Add new
 const handleAdd = () => {
-  data.form = { status: 'Listed', price: 0 }
+  data.form = {status: 'Listed', price: 0, recommend: 'Not Recommended'}
   data.formVisible = true
 }
 
@@ -241,6 +258,12 @@ const add = () => {
       ElMessage.error(res.msg)
     }
   })
+}
+
+const updateRecommend = (row) => {
+  data.form.id = row.id
+  data.form.recommend = row.recommendActive ? 'Yes' : 'No'
+  update()
 }
 
 // Save edited product
@@ -268,7 +291,7 @@ const save = () => {
 
 // Delete
 const handleDelete = (id) => {
-  ElMessageBox.confirm('Data cannot be recovered after deletion. Are you sure you want to delete?', 'Delete Confirmation', { type: 'warning' }).then(res => {
+  ElMessageBox.confirm('Data cannot be recovered after deletion. Are you sure you want to delete?', 'Delete Confirmation', {type: 'warning'}).then(res => {
     request.delete('/goods/delete/' + id).then(res => {
       if (res.code === '200') {
         load()
@@ -277,7 +300,8 @@ const handleDelete = (id) => {
         ElMessage.error(res.msg)
       }
     })
-  }).catch(err => {})
+  }).catch(err => {
+  })
 }
 
 // Reset
