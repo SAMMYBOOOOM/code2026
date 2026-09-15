@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CollectMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Collect">
+        SELECT collect.*, goods.name AS goodsName, goods.img AS goodsImg, goods.price AS goodsPrice, user.name AS userName FROM `collect`
+        LEFT JOIN goods ON collect.goods_id = goods.id
+        LEFT JOIN user ON collect.user_id = user.id
+        <where>
+            <if test="goodsName != null"> AND goods.name  LIKE CONCAT('%', #{goodsName}, '%')</if>
+            <if test="userId != null"> AND collect.user_id  = #{userId}</if>
+            <if test="goodsId != null"> AND collect.goods_id  = #{goodsId}</if>
+        </where>
+        ORDER BY collect.id DESC
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Collect">
+        SELECT * FROM `collect` WHERE id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM `collect` WHERE id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Collect" useGeneratedKeys="true">
+        INSERT INTO `collect`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="goodsId != null">goods_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="time != null">time,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="goodsId != null">#{goodsId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="time != null">#{time},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Collect">
+        UPDATE `collect`
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

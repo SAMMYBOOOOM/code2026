@@ -30,6 +30,7 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
+              <el-dropdown-item @click="router.push('/front/userCollect')">Collect</el-dropdown-item>
               <el-dropdown-item @click="router.push('/front/person')">Person</el-dropdown-item>
               <el-dropdown-item @click="router.push('/front/password')">Password</el-dropdown-item>
               <el-dropdown-item @click="logout">Logout</el-dropdown-item>

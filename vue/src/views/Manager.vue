@@ -54,6 +54,12 @@
               </el-icon>
               <span>Goods carousel</span>
             </el-menu-item>
+            <el-menu-item index="/manager/collect">
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span>User collection</span>
+            </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="user">
             <template #title>

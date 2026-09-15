@@ -21,7 +21,7 @@ public class CopyUtils {
         // Prefix of the source file to copy
         String sourceName = "Category";
         // Prefix of the target file after copying
-        String targetName = "Carousel";
+        String targetName = "Collect";
 
         // Copy the full set: Controller, Service, Mapper, Mapper.xml
         copyMapperXml(sourceName, targetName);
