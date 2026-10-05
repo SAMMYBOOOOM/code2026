@@ -60,6 +60,12 @@
               </el-icon>
               <span>User collection</span>
             </el-menu-item>
+            <el-menu-item index="/manager/recharge">
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span>User recharge</span>
+            </el-menu-item>
           </el-sub-menu>
           <el-sub-menu index="user">
             <template #title>
