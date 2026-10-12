@@ -23,7 +23,7 @@
         <div style="margin-bottom: 20px; padding: 10px; border-radius: 5px; background-color: #e8e4e4; line-height: 25px; text-align: justify">{{ data.goods.description }}</div>
         <div>
           <el-input-number style="width: 150px; height: 40px" :min="1" v-model="data.num"></el-input-number>
-          <el-button style="height: 40px; margin-left: 5px" type="danger">Add to Cart</el-button>
+          <el-button @click="addCart" style="height: 40px; margin-left: 5px" type="danger">Add to Cart</el-button>
           <el-button style="height: 40px; margin-left: 5px" type="danger">Buy Now</el-button>
         </div>
         <div style="margin-top: 10px; color: #666">Products sold and shipped by the Campus Store; invoices and after-sales service are provided by the store. Please buy with confidence!</div>
@@ -62,6 +62,17 @@ const data = reactive({
   commentList: [],
   userCollect: {}
 })
+
+// Add to cart
+const addCart = () => {
+ request.post('/cart/add', { goodsId: data.id, userId: data.user.id, num: data.num }).then(res => {
+   if (res.code === '200') {
+     ElMessage.success('Add to cart successful')
+   } else {
+     ElMessage.error(res.msg)
+   }
+ })
+}
 
 // Whether the current product has been favorited by the currently logged-in user
 const loadCollect = () => {

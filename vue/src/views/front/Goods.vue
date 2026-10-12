@@ -69,6 +69,7 @@ const load = () => {
     params: {
       pageNum: data.pageNum,
       pageSize: data.pageSize,
+      status: 'Listed',
       name: data.name,
       categoryId: data.categoryId
     }

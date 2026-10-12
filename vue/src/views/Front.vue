@@ -14,6 +14,7 @@
                    mode="horizontal">
             <el-menu-item index="/front/home">Home</el-menu-item>
             <el-menu-item index="/front/goods">Goods</el-menu-item>
+            <el-menu-item index="/front/cart">Cart</el-menu-item>
           </el-menu>
         </div>
         <div style="width: fit-content" v-if="router.currentRoute.value.path !== '/front/goods'">

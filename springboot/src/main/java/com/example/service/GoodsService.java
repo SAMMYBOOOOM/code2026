@@ -4,11 +4,13 @@ import cn.hutool.core.util.ObjectUtil;
 import com.example.entity.Account;
 import com.example.entity.Goods;
 import com.example.exception.CustomException;
+import com.example.mapper.CartMapper;
 import com.example.mapper.GoodsMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,8 @@ public class GoodsService {
 
     @Resource
     private GoodsMapper goodsMapper;
+    @Resource
+    private CartMapper cartMapper;
 
     /**
      * Add
@@ -37,8 +41,11 @@ public class GoodsService {
     /**
      * Delete
      */
+    @Transactional
     public void deleteById(Integer id) {
         goodsMapper.deleteById(id);
+        // Delete the cart items associated with the goods
+        cartMapper.deleteByGoodsId(id);
     }
 
     /**
@@ -46,6 +53,10 @@ public class GoodsService {
      */
     public void updateById(Goods goods) {
         goodsMapper.updateById(goods);
+        // Update the cart items associated with the goods
+        if (goods.getStatus().equals("Unlisted")){
+            cartMapper.deleteByGoodsId(goods.getId());
+        }
     }
 
     /**
