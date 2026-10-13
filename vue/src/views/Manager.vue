@@ -29,6 +29,12 @@
             </el-icon>
             <span>Home</span>
           </el-menu-item>
+          <el-menu-item index="/manager/dataManager">
+            <el-icon>
+              <TrendCharts/>
+            </el-icon>
+            <span>Chart</span>
+          </el-menu-item>
           <el-sub-menu index="info">
             <template #title>
               <el-icon>
