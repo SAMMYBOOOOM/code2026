@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CommentMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Comment">
+        SELECT `comment`.*, user.name AS userName, user.avatar AS userAvatar, orders.order_no AS orderNo, goods.name AS goodsName, goods.img AS goodsImg
+        FROM `comment`
+        LEFT JOIN user ON `comment`.user_id = user.id
+        LEFT JOIN orders ON `comment`.order_id = orders.id
+        LEFT JOIN goods ON `comment`.goods_id = goods.id
+        <where>
+            <if test="content != null"> AND `comment`.content LIKE CONCAT('%', #{content}, '%')</if>
+            <if test="userId != null"> AND `comment`.user_id = #{userId}</if>
+            <if test="goodsId != null"> AND `comment`.goods_id = #{goodsId}</if>
+            <if test="orderId != null"> AND `comment`.order_id = #{orderId}</if>
+            <if test="goodsName != null"> AND goods.name LIKE CONCAT('%', #{goodsName}, '%')</if>
+        </where>
+        ORDER BY `comment`.id DESC
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Comment">
+        SELECT * FROM `comment` WHERE id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM `comment` WHERE id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Comment" useGeneratedKeys="true">
+        INSERT INTO `comment`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="score != null">score,</if>
+            <if test="content != null">content,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="time != null">time,</if>
+            <if test="orderId != null">order_id,</if>
+            <if test="goodsId != null">goods_id,</if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="score != null">#{score},</if>
+            <if test="content != null">#{content},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="time != null">#{time},</if>
+            <if test="orderId != null">#{orderId},</if>
+            <if test="goodsId != null">#{goodsId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Comment">
+        UPDATE `comment`
+        <set>
+            <if test="id != null">
+                id = #{id},
+            </if>
+            <if test="score != null">
+                score = #{score},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId},
+            </if>
+            <if test="goodsId != null">
+                goods_id = #{goodsId},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

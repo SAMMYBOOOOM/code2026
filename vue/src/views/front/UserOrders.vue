@@ -29,6 +29,11 @@
                     <b style="color: red">{{ (scope.row.goodsPrice * scope.row.num).toFixed(2) }} Yuan</b>
                   </template>
                 </el-table-column>
+                <el-table-column label="Action" width="120">
+                  <template #default="scope">
+                    <el-button @click="handleAddComment(scope.row)" type="success" v-if="props.row.status === 'Completed'">Review</el-button>
+                  </template>
+                </el-table-column>
               </el-table>
             </div>
           </template>
@@ -59,7 +64,6 @@
         <el-table-column label="Order Action" align="center" width="120">
           <template #default="scope">
             <el-button @click="cancel(scope.row)"  type="danger" v-if="scope.row.status === 'Pending'">Cancel</el-button>
-            <el-button type="success" v-if="scope.row.status === 'Completed'">Review</el-button>
             <el-button @click="done(scope.row)" type="primary" v-if="scope.row.status === 'Shipped' || scope.row.status === 'Delivered'">Confirm Receipt</el-button>
           </template>
         </el-table-column>
@@ -68,8 +72,24 @@
       <div style="margin-top: 20px">
         <el-pagination @current-change="load" layout="total, prev, pager, next" v-model:page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
       </div>
-
     </div>
+
+    <el-dialog title="Review Information" width="30%" v-model="data.formVisible" :close-on-click-modal="false" destroy-on-close>
+      <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="80px" style="padding-right: 30px; padding-top: 20px">
+        <el-form-item label="Rating" prop="score">
+          <el-rate show-score allow-half v-model="data.form.score"></el-rate>
+        </el-form-item>
+        <el-form-item label="Content" prop="content">
+          <el-input type="textarea" :rows="3" v-model="data.form.content" autocomplete="off" placeholder="Please enter review content" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="data.formVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="save">Save</el-button>
+      </span>
+      </template>
+    </el-dialog>
 
   </div>
 </template>
@@ -91,9 +111,12 @@ const data = reactive({
   orderNo: null,
   goodsName: null,
   rules: {
-    name: [
-      { required: true, message: 'Please enter name', trigger: 'blur' },
-    ]
+    score: [
+      { required: true, message: 'Please enter rating', trigger: 'change' },
+    ],
+    content: [
+      { required: true, message: 'Please enter content', trigger: 'blur' },
+    ],
   }
 })
 
@@ -114,23 +137,52 @@ const load = () => {
 }
 load()
 
-// Add
-const handleAdd = () => {
-  data.form = {}
-  data.formVisible = true
+const cancel = (row) => {
+  ElMessageBox.confirm('Are you sure you want to cancel the order?', 'Confirmation', { type: 'warning' }).then(res => {
+    data.form = row
+    data.form.status = 'Cancelled'
+    updateOrder()
+  }).catch(err => {})
 }
 
-// Edit
-const handleEdit = (row) => {
-  data.form = JSON.parse(JSON.stringify(row))
-  data.formVisible = true
+const done = (row) => {
+  ElMessageBox.confirm('Have you confirmed that you received the order?', 'Confirmation', { type: 'warning' }).then(res => {
+    data.form = row
+    data.form.status = 'Completed'
+    updateOrder()
+  }).catch(err => {})
+}
+
+// Edit save
+const updateOrder = () => {
+  request.put('/orders/update', data.form).then(res => {
+    if (res.code === '200') {
+      load()
+      ElMessage.success('Operation successful')
+    } else {
+      ElMessage.error(res.msg)
+    }
+  })
+}
+
+// Add
+const handleAddComment = (row) => {
+  request.get('/comment/selectAll', {
+    params: {
+      orderId: row.orderId,
+      goodsId: row.goodsId
+    }
+  }).then(res => {
+    // Returns an array
+    data.form = res.data?.length > 0 ? res.data[0] : { orderId: row.orderId, goodsId: row.goodsId, userId: data.user.id }
+    data.formVisible = true
+  })
 }
 
 // Add save
-const add = () => {
-  request.post('/orders/add', data.form).then(res => {
+const addComment = () => {
+  request.post('/comment/add', data.form).then(res => {
     if (res.code === '200') {
-      load()
       ElMessage.success('Operation successful')
       data.formVisible = false
     } else {
@@ -139,28 +191,12 @@ const add = () => {
   })
 }
 
-const cancel = (row) => {
-  ElMessageBox.confirm('Are you sure you want to cancel the order?', 'Confirmation', { type: 'warning' }).then(res => {
-    data.form = row
-    data.form.status = 'Cancelled'
-    update()
-  }).catch(err => {})
-}
-
-const done = (row) => {
-  ElMessageBox.confirm('Have you confirmed that you received the order?', 'Confirmation', { type: 'warning' }).then(res => {
-    data.form = row
-    data.form.status = 'Completed'
-    update()
-  }).catch(err => {})
-}
-
 // Edit save
-const update = () => {
-  request.put('/orders/update', data.form).then(res => {
+const updateComment = () => {
+  request.put('/comment/update', data.form).then(res => {
     if (res.code === '200') {
-      load()
       ElMessage.success('Operation successful')
+      data.formVisible = false
     } else {
       ElMessage.error(res.msg)
     }
@@ -172,7 +208,7 @@ const save = () => {
   formRef.value.validate(valid => {
     if (valid) {
       // If data.form has id, it's an update; otherwise it's an add
-      data.form.id ? update() : add()
+      data.form.id ? updateComment() : addComment()
     }
   })
 }

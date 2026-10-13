@@ -38,8 +38,22 @@
       <div v-if="data.current === 'Product Details'" style="padding: 10px" v-html="data.goods.content"></div>
       <div v-if="data.current === 'Product Reviews'" style="min-height: 700px">
         <div v-if="data.commentList.length === 0" style="padding: 50px; text-align: center; color: #666">No reviews yet...</div>
-        <div v-if="data.commentList.length > 0" style="padding: 20px; text-align: center">
+        <div v-if="data.commentList.length > 0" style="padding: 20px;">
           <!--          Display comment list-->
+          <div v-for="(item, index) in data.commentList" :key="item.id" style="display: flex; grid-gap: 10px; padding: 10px 0;
+            border-bottom: 1px solid #ddd" :style="{ 'borderWidth': index === data.commentList.length - 1 ? 0 : '1px' }">
+            <img :src="item.userAvatar" alt="" style="width: 50px; height: 50px; border-radius: 50%">
+            <div style="flex: 1">
+              <div><span>{{ item.userName }}</span>
+                <span style="color: #666; font-size: 13px; margin-left: 10px">{{ item.time }}</span>
+              </div>
+              <div style="margin-bottom: 5px"> <el-rate v-model="item.score" show-score allow-half disabled></el-rate></div>
+              <div>{{ item.content }}</div>
+            </div>
+          </div>
+          <div style="margin-top: 20px">
+            <el-pagination @current-change="loadComment" layout="total, prev, pager, next" v-model:page-size="data.pageSize" v-model:current-page="data.pageNum" :total="data.total"/>
+          </div>
         </div>
       </div>
 
@@ -82,6 +96,9 @@ const data = reactive({
   num: 1,
   current: 'Product Details',
   commentList: [],
+  pageNum: 1,
+  pageSize: 5,
+  total: 0,
   userCollect: {},
   form: {},
   formVisible: false,
@@ -94,6 +111,20 @@ const data = reactive({
     ]
   }
 })
+
+const loadComment = () => {
+  request.get('/comment/selectPage', {
+    params: {
+      pageNum: data.pageNum,
+      pageSize: data.pageSize,
+      goodsId: data.id
+    }
+  }).then(res => {
+    data.commentList = res.data?.list
+    data.total = res.data?.total
+  })
+}
+loadComment()
 
 const handleAddOrder = () => {
   data.form = {}
