@@ -24,7 +24,7 @@
         <div>
           <el-input-number style="width: 150px; height: 40px" :min="1" v-model="data.num"></el-input-number>
           <el-button @click="addCart" style="height: 40px; margin-left: 5px" type="danger">Add to Cart</el-button>
-          <el-button style="height: 40px; margin-left: 5px" type="danger">Buy Now</el-button>
+          <el-button @click="addOrder" style="height: 40px; margin-left: 5px" type="danger">Buy Now</el-button>
         </div>
         <div style="margin-top: 10px; color: #666">Products sold and shipped by the Campus Store; invoices and after-sales service are provided by the store. Please buy with confidence!</div>
       </div>
@@ -63,15 +63,24 @@ const data = reactive({
   userCollect: {}
 })
 
-// Add to cart
+const addOrder = () => {
+  request.post('/orders/add', { userId: data.user.id, cartList: [ {goodsId: data.id, num: data.num } ] }).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('Order placed successfully')
+    } else {
+      ElMessage.error(res.msg)
+    }
+  })
+}
+
 const addCart = () => {
- request.post('/cart/add', { goodsId: data.id, userId: data.user.id, num: data.num }).then(res => {
-   if (res.code === '200') {
-     ElMessage.success('Add to cart successful')
-   } else {
-     ElMessage.error(res.msg)
-   }
- })
+  request.post('/cart/add', { goodsId: data.id, num: data.num, userId: data.user.id }).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('Added to cart successfully')
+    } else {
+      ElMessage.error(res.msg)
+    }
+  })
 }
 
 // Whether the current product has been favorited by the currently logged-in user

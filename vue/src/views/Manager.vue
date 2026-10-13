@@ -36,6 +36,12 @@
               </el-icon>
               <span>Info control</span>
             </template>
+            <el-menu-item index="/manager/orders">
+              <el-icon>
+                <Document/>
+              </el-icon>
+              <span>Orders Information</span>
+            </el-menu-item>
             <el-menu-item index="/manager/category">
               <el-icon>
                 <Document/>

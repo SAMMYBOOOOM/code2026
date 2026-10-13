@@ -17,7 +17,7 @@
           </el-table-column>
           <el-table-column label="Quantity">
             <template #default="scope">
-              <el-input-number @change="calTotal" v-model="scope.row.num" :min="1" style="width: 150px"></el-input-number>
+              <el-input-number @change="changeNum(scope.row)" v-model="scope.row.num" :min="1" style="width: 150px"></el-input-number>
             </template>
           </el-table-column>
           <el-table-column label="Action" align="center" width="100">
@@ -71,6 +71,27 @@ const data = reactive({
     ]
   }
 })
+
+const addOrder = () => {
+  if (!data.selectedRows?.length) {
+    ElMessage.warning('Please select goods')
+    return
+  }
+  request.post('/orders/add', { userId: data.user.id, cartList: data.selectedRows }).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('Order placed successfully')
+      load()
+    } else {
+      ElMessage.error(res.msg)
+    }
+  })
+}
+
+const changeNum = (row) => {
+  calTotal()
+  data.form = row
+  update()
+}
 
 const calTotal = () => {
   data.total = 0
@@ -129,9 +150,6 @@ const add = () => {
 const update = () => {
   request.put('/cart/update', data.form).then(res => {
     if (res.code === '200') {
-      load()
-      ElMessage.success('Operation successful')
-      data.formVisible = false
     } else {
       ElMessage.error(res.msg)
     }

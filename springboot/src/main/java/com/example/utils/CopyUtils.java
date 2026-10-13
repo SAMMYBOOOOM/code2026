@@ -21,16 +21,16 @@ public class CopyUtils {
         // Prefix of the source file to copy
         String sourceName = "Category";
         // Prefix of the target file after copying
-        String targetName = "Cart";
+        String targetName = "OrderDetail";
 
         // Copy the full set: Controller, Service, Mapper, Mapper.xml
         copyMapperXml(sourceName, targetName);
         copyMapper(sourceName, targetName);
-        copyService(sourceName, targetName);
-        copyController(sourceName, targetName);
+//        copyService(sourceName, targetName);
+//        copyController(sourceName, targetName);
 
         // Copy Vue file
-        copyVue(sourceName, targetName);
+//        copyVue(sourceName, targetName);
     }
 
     // Copy Mapper.xml
