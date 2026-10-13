@@ -29,22 +29,27 @@
       </div>
       <div style="text-align: right; margin-top: 20px; font-size: 20px">Total Price:
         <b style="color: red; display: inline-block; min-width: 60px; text-align: left">{{ data.total }} Yuan</b>
-        <div style="margin-top: 10px"><el-button @click="addOrder" type="danger">Place Order Now</el-button></div>
+        <div style="margin-top: 10px"><el-button :disabled="data.total === 0" @click="handleAddOrder" type="danger">Place Order Now</el-button></div>
       </div>
     </div>
 
 
-
     <el-dialog title="Order Information" width="30%" v-model="data.formVisible" :close-on-click-modal="false" destroy-on-close>
-      <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="80px" style="padding-right: 30px; padding-top: 20px">
-        <el-form-item label="Name" prop="name">
-          <el-input v-model="data.form.name" autocomplete="off" />
+      <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="100px" style="padding-right: 30px">
+        <el-form-item label="Delivery Type" prop="deliverType">
+          <el-radio-group v-model="data.form.deliverType">
+            <el-radio-button value="Pickup" label="Pickup"></el-radio-button>
+            <el-radio-button value="Delivery" label="Delivery"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="Delivery Address" prop="address" v-if="data.form.deliverType === 'Delivery'">
+          <el-input v-model="data.form.address" type="textarea" :rows="3" placeholder="Please enter the delivery address, including contact person, phone number, and address details"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
         <el-button @click="data.formVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="save">Save</el-button>
+        <el-button type="primary" @click="addOrder">Confirm</el-button>
       </span>
       </template>
     </el-dialog>
@@ -66,20 +71,31 @@ const data = reactive({
   tableData: [],
   selectedRows: [],
   rules: {
-    name: [
-      { required: true, message: 'Please enter name', trigger: 'blur' },
+    deliverType: [
+      { required: true, message: 'Please select delivery type', trigger: 'change' }
+    ],
+    address: [
+      { required: true, message: 'Please enter delivery address', trigger: 'blur' }
     ]
   }
 })
+
+const handleAddOrder = () => {
+  data.form = {}
+  data.formVisible = true
+}
 
 const addOrder = () => {
   if (!data.selectedRows?.length) {
     ElMessage.warning('Please select goods')
     return
   }
-  request.post('/orders/add', { userId: data.user.id, cartList: data.selectedRows }).then(res => {
+  data.form.userId = data.user.id
+  data.form.cartList = data.selectedRows
+  request.post('/orders/add', data.form).then(res => {
     if (res.code === '200') {
       ElMessage.success('Order placed successfully')
+      data.formVisible = false
       load()
     } else {
       ElMessage.error(res.msg)

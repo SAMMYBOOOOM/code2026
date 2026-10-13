@@ -55,9 +55,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="time" label="Order Time"></el-table-column>
+        <el-table-column prop="address" label="Address" width="300"></el-table-column>
+        <el-table-column prop="deliver" label="Delivery Info" width="300"></el-table-column>
         <el-table-column label="Order Action" align="center" width="100">
           <template #default="scope">
-            <el-button type="primary" @click="handleEdit(scope.row.id)">Ship</el-button>
+            <el-button v-if="scope.row.deliverType === 'Pickup' && scope.row.status === 'Pending'" type="primary" @click="out(scope.row)">Ship</el-button>
+            <el-button v-if="scope.row.deliverType === 'Delivery' && scope.row.status === 'Pending'" type="primary" @click="handleDeliver(scope.row)">Deliver</el-button>
           </template>
         </el-table-column>
         <el-table-column label="Delete" align="center" width="100">
@@ -74,8 +77,8 @@
 
     <el-dialog title="Order Information" width="30%" v-model="data.formVisible" :close-on-click-modal="false" destroy-on-close>
       <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="80px" style="padding-right: 30px; padding-top: 20px">
-        <el-form-item label="Name" prop="name">
-          <el-input v-model="data.form.name" autocomplete="off" />
+        <el-form-item label="Delivery Info" prop="deliver">
+          <el-input placeholder="Please enter courier name and contact information" type="textarea" :rows="3" v-model="data.form.deliver" autocomplete="off" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -104,8 +107,8 @@ const data = reactive({
   tableData: [],
   name: null,
   rules: {
-    name: [
-      { required: true, message: 'Please enter name', trigger: 'blur' },
+    deliver: [
+      { required: true, message: 'Please enter delivery info', trigger: 'blur' },
     ]
   }
 })
@@ -132,7 +135,7 @@ const handleAdd = () => {
 }
 
 // Edit
-const handleEdit = (row) => {
+const handleDeliver = (row) => {
   data.form = JSON.parse(JSON.stringify(row))
   data.formVisible = true
 }
@@ -150,8 +153,30 @@ const add = () => {
   })
 }
 
+const out = (row) => {
+  ElMessageBox.confirm('Are you sure the order has been shipped?', 'Confirmation', { type: 'warning' }).then(res => {
+    data.form = row
+    data.form.status = 'Shipped'
+    request.put('/orders/update', data.form).then(res => {
+      if (res.code === '200') {
+        load()
+        ElMessage.success('Operation successful')
+        data.formVisible = false
+      } else {
+        ElMessage.error(res.msg)
+      }
+    })
+  }).catch(err => {})
+}
+
 // Edit save
 const update = () => {
+  if (data.form.deliverType === 'Pickup') {
+    data.form.status = 'Shipped'
+  }
+  if (data.form.deliverType === 'Delivery') {
+    data.form.status = 'Delivered'
+  }
   request.put('/orders/update', data.form).then(res => {
     if (res.code === '200') {
       load()

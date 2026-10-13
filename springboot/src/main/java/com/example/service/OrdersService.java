@@ -1,9 +1,7 @@
 package com.example.service;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.db.sql.Order;
 import com.example.entity.*;
 import com.example.exception.CustomException;
 import com.example.mapper.*;
@@ -19,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Orders service
+ * Business processing
  **/
 @Service
 public class OrdersService {
@@ -36,30 +34,29 @@ public class OrdersService {
     CartMapper cartMapper;
 
     /**
-     * Add
+     * Common order placement interface for batch and single items from the shopping cart
      */
     @Transactional
     public void add(Orders orders) {
         orders.setStatus("Pending");
         orders.setTime(DateUtil.now());
-        // Generate random order number 20261012
+        // Random order number 20251202
         String orderNo = DateUtil.format(new Date(), "yyyyMMdd") + System.currentTimeMillis() + RandomUtil.randomNumbers(4);
         orders.setOrderNo(orderNo);
         ordersMapper.insert(orders);
         Integer orderId = orders.getId();
-
         List<Cart> cartList = orders.getCartList();
         User user = userMapper.selectById(orders.getUserId());
         BigDecimal totalPrice = BigDecimal.ZERO;
-        for (Cart cart : cartList){
+        for (Cart cart : cartList) {
             Integer goodsId = cart.getGoodsId();
             Goods goods = goodsMapper.selectById(goodsId);
-            if (goods.getStore() < cart.getNum()){  // Check if the goods is enough
-                throw new CustomException(goods.getName() + "The goods is not enough");
+            if (goods.getStore() < cart.getNum()) {  // Insufficient stock
+                throw new CustomException(goods.getName() + " product stock is insufficient");
             }
-            goods.setStore(goods.getStore() - cart.getNum());
-            goodsMapper.updateById(goods);  // Update goods store
-
+            goods.setStore(goods.getStore() - cart.getNum());  // Deduct stock
+            goods.setSaleCount(goods.getSaleCount() + cart.getNum());  // Increase sales count
+            goodsMapper.updateById(goods);  // Update product stock
             // Add order detail
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setNum(cart.getNum());
@@ -70,55 +67,79 @@ public class OrdersService {
             orderDetail.setOrderId(orderId);
             orderDetailMapper.insert(orderDetail);
 
-            // Delete goods from cart
-            cartMapper.deleteById(cart.getId());
+            // Delete the cart records corresponding to the ordered products
+            if (cart.getId() != null) {
+                cartMapper.deleteById(cart.getId());
+            }
 
             totalPrice = totalPrice.add(goods.getPrice().multiply(BigDecimal.valueOf(cart.getNum())));
         }
-        if (user.getAccount().compareTo(totalPrice) < 0){   // Check if the balance is enough
-            throw new CustomException("The balance is not enough, please deposit");
+        if (user.getAccount().compareTo(totalPrice) < 0) {  // User's balance is less than the order total
+            throw new CustomException("Sorry, your account balance is insufficient. Please recharge!");
         }
         user.setAccount(user.getAccount().subtract(totalPrice));
-        userMapper.updateById(user);    // Update user balance
+        userMapper.updateById(user);  // Update balance
         orders.setTotal(totalPrice);
-        ordersMapper.updateById(orders);    // Update order total price
+        ordersMapper.updateById(orders);  // Update order total
     }
 
     /**
      * Delete
      */
+    @Transactional
     public void deleteById(Integer id) {
         ordersMapper.deleteById(id);
+        orderDetailMapper.deleteByOrderId(id);
     }
 
     /**
      * Update
      */
+    @Transactional
     public void updateById(Orders orders) {
+        if ("Cancelled".equals(orders.getStatus())) {
+            Integer userId = orders.getUserId();
+            User user = userMapper.selectById(userId);
+            user.setAccount(user.getAccount().add(orders.getTotal()));
+            userMapper.updateById(user);
+            // Add back product stock, subtract product sales count
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrderId(orders.getId());
+            List<OrderDetail> orderDetailList = orderDetailMapper.selectAll(orderDetail);
+            for (OrderDetail detail : orderDetailList) {
+                Integer goodsId = detail.getGoodsId();
+                Goods goods = goodsMapper.selectById(goodsId);
+                if (goods != null) {
+                    goods.setStore(goods.getStore() + detail.getNum());
+                    goods.setSaleCount(goods.getSaleCount() - detail.getNum());
+                    goodsMapper.updateById(goods);
+                }
+            }
+        }
         ordersMapper.updateById(orders);
     }
 
     /**
-     * Select by id
+     * Query by ID
      */
     public Orders selectById(Integer id) {
         return ordersMapper.selectById(id);
     }
 
     /**
-     * Select all
+     * Query all
      */
     public List<Orders> selectAll(Orders orders) {
         return ordersMapper.selectAll(orders);
     }
 
     /**
-     * Select page
+     * Paginated query
      */
     public PageInfo<Orders> selectPage(Orders orders, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Orders> list = ordersMapper.selectAll(orders);
-        for (Orders o : list){
+        for (Orders o : list) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setOrderId(o.getId());
             List<OrderDetail> orderDetailList = orderDetailMapper.selectAll(orderDetail);
@@ -126,4 +147,5 @@ public class OrdersService {
         }
         return PageInfo.of(list);
     }
+
 }

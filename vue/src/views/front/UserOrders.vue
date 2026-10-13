@@ -1,7 +1,8 @@
 <template>
-  <div class="front-container">
-    <div style="margin-bottom: 20px;">
+  <div class="front-container" style="width: 80%">
+    <div style="margin-bottom: 10px;">
       <el-input clearable @clear="load" v-model="data.orderNo" style="width: 400px; height: 40px; margin-right: 10px" placeholder="Please enter order number to search"></el-input>
+      <el-input clearable @clear="load" v-model="data.goodsName" style="width: 400px; height: 40px; margin-right: 10px" placeholder="Please enter goods name to search"></el-input>
       <el-button style="height: 40px" type="primary" @click="load">Search</el-button>
     </div>
 
@@ -53,10 +54,13 @@
           </template>
         </el-table-column>
         <el-table-column prop="time" label="Order Time"></el-table-column>
+        <el-table-column prop="address" label="Address" width="300"></el-table-column>
+        <el-table-column prop="deliver" label="Delivery Info" width="300"></el-table-column>
         <el-table-column label="Order Action" align="center" width="120">
           <template #default="scope">
-            <el-button type="danger" v-if="scope.row.status === 'Pending'">Cancel</el-button>
-            <el-button type="primary" v-if="scope.row.status === 'Confirm'">Confirm Receipt</el-button>
+            <el-button @click="cancel(scope.row)"  type="danger" v-if="scope.row.status === 'Pending'">Cancel</el-button>
+            <el-button type="success" v-if="scope.row.status === 'Completed'">Review</el-button>
+            <el-button @click="done(scope.row)" type="primary" v-if="scope.row.status === 'Shipped' || scope.row.status === 'Delivered'">Confirm Receipt</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -66,21 +70,6 @@
       </div>
 
     </div>
-
-
-    <el-dialog title="Order Information" width="30%" v-model="data.formVisible" :close-on-click-modal="false" destroy-on-close>
-      <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="80px" style="padding-right: 30px; padding-top: 20px">
-        <el-form-item label="Name" prop="name">
-          <el-input v-model="data.form.name" autocomplete="off" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="data.formVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="save">Save</el-button>
-      </span>
-      </template>
-    </el-dialog>
 
   </div>
 </template>
@@ -99,7 +88,8 @@ const data = reactive({
   formVisible: false,
   form: {},
   tableData: [],
-  name: null,
+  orderNo: null,
+  goodsName: null,
   rules: {
     name: [
       { required: true, message: 'Please enter name', trigger: 'blur' },
@@ -114,6 +104,7 @@ const load = () => {
       pageNum: data.pageNum,
       pageSize: data.pageSize,
       orderNo: data.orderNo,
+      goodsName: data.goodsName,
       userId: data.user.id
     }
   }).then(res => {
@@ -148,13 +139,28 @@ const add = () => {
   })
 }
 
+const cancel = (row) => {
+  ElMessageBox.confirm('Are you sure you want to cancel the order?', 'Confirmation', { type: 'warning' }).then(res => {
+    data.form = row
+    data.form.status = 'Cancelled'
+    update()
+  }).catch(err => {})
+}
+
+const done = (row) => {
+  ElMessageBox.confirm('Have you confirmed that you received the order?', 'Confirmation', { type: 'warning' }).then(res => {
+    data.form = row
+    data.form.status = 'Completed'
+    update()
+  }).catch(err => {})
+}
+
 // Edit save
 const update = () => {
   request.put('/orders/update', data.form).then(res => {
     if (res.code === '200') {
       load()
       ElMessage.success('Operation successful')
-      data.formVisible = false
     } else {
       ElMessage.error(res.msg)
     }
@@ -188,6 +194,7 @@ const handleDelete = (id) => {
 // Reset
 const reset = () => {
   data.orderNo = null
+  data.goodsName = null
   load()
 }
 </script>

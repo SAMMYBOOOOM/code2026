@@ -34,4 +34,9 @@ public interface OrderDetailMapper {
       * select all
     */
     List<OrderDetail> selectAll(OrderDetail orderDetail);
+
+    /**
+      * delete by order id
+    */
+    int deleteByOrderId(Integer orderId);
 }

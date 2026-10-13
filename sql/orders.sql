@@ -11,7 +11,7 @@
  Target Server Version : 80046 (8.0.46)
  File Encoding         : 65001
 
- Date: 12/10/2026 19:37:29
+ Date: 13/10/2026 00:57:39
 */
 
 SET NAMES utf8mb4;
@@ -29,14 +29,15 @@ CREATE TABLE `orders`  (
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Status',
   `time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Order Time',
   `deliver_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Delivery Type',
+  `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Delivery Address',
+  `deliver` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Delivery Information',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Order Information' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'Order Information' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of orders
 -- ----------------------------
-INSERT INTO `orders` VALUES (2, '2026101217918492787203843', 15.00, 16, 'Pending', '2026-10-12 18:54:38', NULL);
-INSERT INTO `orders` VALUES (3, '2026101217918506875809065', 97.00, 16, 'Pending', '2026-10-12 19:18:07', NULL);
-INSERT INTO `orders` VALUES (5, '2026101217918510095510221', 11.00, 16, 'Pending', '2026-10-12 19:23:29', NULL);
+INSERT INTO `orders` VALUES (15, '2026101317918697766662276', 47.00, 16, 'Completed', '2026-10-13 00:36:16', 'Delivery', 'aabbccdd 1234', 'should be at the front\n');
+INSERT INTO `orders` VALUES (16, '2026101317918697926246987', 15.00, 16, 'Shipped', '2026-10-13 00:36:32', 'Pickup', NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;

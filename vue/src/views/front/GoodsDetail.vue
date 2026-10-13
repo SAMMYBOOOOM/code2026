@@ -24,7 +24,7 @@
         <div>
           <el-input-number style="width: 150px; height: 40px" :min="1" v-model="data.num"></el-input-number>
           <el-button @click="addCart" style="height: 40px; margin-left: 5px" type="danger">Add to Cart</el-button>
-          <el-button @click="addOrder" style="height: 40px; margin-left: 5px" type="danger">Buy Now</el-button>
+          <el-button @click="handleAddOrder" style="height: 40px; margin-left: 5px" type="danger">Buy Now</el-button>
         </div>
         <div style="margin-top: 10px; color: #666">Products sold and shipped by the Campus Store; invoices and after-sales service are provided by the store. Please buy with confidence!</div>
       </div>
@@ -44,15 +44,37 @@
       </div>
 
     </div>
+
+    <el-dialog title="Order Information" width="30%" v-model="data.formVisible" :close-on-click-modal="false" destroy-on-close>
+      <el-form ref="formRef" :model="data.form" :rules="data.rules" label-width="100px" style="padding-right: 30px">
+        <el-form-item label="Delivery Type" prop="deliverType">
+          <el-radio-group v-model="data.form.deliverType">
+            <el-radio-button value="Pickup" label="Pickup"></el-radio-button>
+            <el-radio-button value="Delivery" label="Delivery"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="Delivery Address" prop="address" v-if="data.form.deliverType === 'Delivery'">
+          <el-input v-model="data.form.address" type="textarea" :rows="3" placeholder="Please enter the delivery address, including contact person, phone number, and address details"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="data.formVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="addOrder">Confirm</el-button>
+      </span>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import router from "@/router";
 import request from "@/utils/request";
 import {ElMessage} from "element-plus";
 
+const formRef = ref()
 const data = reactive({
   user: JSON.parse(localStorage.getItem('system-user') || '{}'),
   id: router.currentRoute.value.query.id,
@@ -60,15 +82,38 @@ const data = reactive({
   num: 1,
   current: 'Product Details',
   commentList: [],
-  userCollect: {}
+  userCollect: {},
+  form: {},
+  formVisible: false,
+  rules: {
+    deliverType: [
+      { required: true, message: 'Please select delivery type', trigger: 'change' }
+    ],
+    address: [
+      { required: true, message: 'Please enter delivery address', trigger: 'blur' }
+    ]
+  }
 })
 
+const handleAddOrder = () => {
+  data.form = {}
+  data.formVisible = true
+}
+
 const addOrder = () => {
-  request.post('/orders/add', { userId: data.user.id, cartList: [ {goodsId: data.id, num: data.num } ] }).then(res => {
-    if (res.code === '200') {
-      ElMessage.success('Order placed successfully')
-    } else {
-      ElMessage.error(res.msg)
+  formRef.value.validate(valid => {
+    if (valid) {
+      data.form.userId = data.user.id
+      data.form.cartList = [ {goodsId: data.id, num: data.num } ]
+      request.post('/orders/add', data.form).then(res => {
+        if (res.code === '200') {
+          ElMessage.success('Order placed successfully')
+          load()
+          data.formVisible = false
+        } else {
+          ElMessage.error(res.msg)
+        }
+      })
     }
   })
 }
